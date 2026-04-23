@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class Food : MonoBehaviour
 {
-    private void OnEnable()
+    void OnEnable()
     {
-        BoidManager.Instance.foods.Add(this);
+        if (BoidManager.Instance != null)
+            BoidManager.Instance.foods.Add(this);
     }
-
     private void OnDestroy()
     {
         if (BoidManager.Instance != null)
