@@ -4,7 +4,7 @@ public class FoodSpawner : MonoBehaviour
 {
     public GameObject foodPrefab;
     public float spawnRadius = 20;
-    public float spawnInterval 3;
+    public float spawnInterval = 3;
 
     private void Start()
     {
