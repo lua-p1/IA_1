@@ -14,28 +14,34 @@ public class Boid : MonoBehaviour
     public BoidPerception Perception { get; private set; }
 
     public Vector3 Velocity => velocity;
+
+    [HideInInspector] public BoidManager manager;
+
     void OnEnable()
     {
-        BoidManager.Instance.boids.Add(this);
+        manager?.boids.Add(this);
     }
 
-    void OnDestroy()
+    void OnDisable()
     {
-        if (BoidManager.Instance != null)
-            BoidManager.Instance.boids.Remove(this);
+        manager?.boids.Remove(this);
     }
 
-    void Start()
+    void Start() { }
+    public void Initialize()
     {
         Perception = new BoidPerception(this);
         decisionTree = new BoidDecisionTree();
 
         velocity = Random.insideUnitSphere * maxSpeed;
         velocity.y = 0;
+        Debug.Log("Boid inicializado");
     }
 
     void Update()
     {
+        if (decisionTree == null) return;
+
         var behavior = decisionTree.Decide(this);
         Move(behavior.Calculate(this));
 
@@ -58,16 +64,13 @@ public class Boid : MonoBehaviour
         velocity.y = 0;
         velocity = Vector3.ClampMagnitude(velocity, maxSpeed);
 
-        transform.position += velocity * Time.deltaTime;
+        Vector3 nextPos = transform.position + velocity * Time.deltaTime;
+
+        if (!Physics.Raycast(transform.position, velocity.normalized, 1f))
+        {
+            transform.position = nextPos;
+        }
+
         transform.position = new Vector3(transform.position.x, 1f, transform.position.z);
-    }
-
-    void OnDrawGizmos()
-    {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, foodRange);
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, hunterRange);
     }
 }

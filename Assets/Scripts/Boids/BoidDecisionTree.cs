@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using UnityEngine;
-
 public class BoidDecisionTree : IDecisionNode
 {
     public ISteeringBehavior Decide(Boid boid)
