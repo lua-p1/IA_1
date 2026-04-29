@@ -1,35 +1,30 @@
-using UnityEngine;
-
-public class PatrolState : IState
+public class PatrolState : HunterState
 {
-    Hunter hunter;
+    public PatrolState(Hunter hunter) : base(hunter) { }
 
-    public PatrolState(Hunter h) => hunter = h;
-
-    public void Enter() { }
-
-    public void Update()
+    public override void Enter()
     {
-        Transform wp = hunter.waypoints[hunter.currentWP];
+    }
 
-        hunter.Movement.Move(wp.position - hunter.transform.position);
+    public override void Update()
+    {
+        hunter.Patrol();
 
-        if (Vector3.Distance(hunter.transform.position, wp.position) < 1f)
-            hunter.currentWP = (hunter.currentWP + 1) % hunter.waypoints.Length;
+        hunter.ConsumeEnergy(hunter.PatrolCost);
 
-        var target = hunter.Perception.GetTarget();
-
-        if (target != null)
+        if (!hunter.HasEnergy())
         {
-            hunter.ChangeState(hunter.huntState);
+            hunter.ChangeState(new IdleState(hunter));
             return;
         }
 
-        if (hunter.energy <= 0)
+        if (hunter.CanSeeBoid())
         {
-            hunter.ChangeState(hunter.idleState);
+            hunter.ChangeState(new HuntingState(hunter));
         }
     }
 
-    public void Exit() { }
+    public override void Exit()
+    {
+    }
 }

@@ -1,15 +1,43 @@
+using System.Collections;
 using UnityEngine;
 
 public class Food : MonoBehaviour
 {
-    private void OnEnable()
+    [Header("Respawn")]
+    [SerializeField] private float respawnTime = 5f;
+
+    private FoodPool pool;
+
+    public void Initialize(FoodPool foodPool)
     {
-        BoidManager.Instance.foods.Add(this);
+        pool = foodPool;
     }
 
-    private void OnDestroy()
+    public void Consume()
     {
-        if (BoidManager.Instance != null)
-            BoidManager.Instance.foods.Remove(this);
+        if (!gameObject.activeInHierarchy)
+            return;
+
+        gameObject.SetActive(false);
+
+        if (pool != null)
+            pool.StartCoroutine(RespawnCoroutine());
+    }
+
+    private IEnumerator RespawnCoroutine()
+    {
+        yield return new WaitForSeconds(respawnTime);
+
+        if (pool != null)
+        {
+            transform.position = pool.GetRandomPosition();
+            gameObject.SetActive(true);
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawSphere(transform.position, 0.3f);
     }
 }

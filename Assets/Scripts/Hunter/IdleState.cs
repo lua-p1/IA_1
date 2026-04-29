@@ -1,27 +1,26 @@
-using UnityEngine;
-
-public class IdleState : IState
+public class IdleState : HunterState
 {
-    Hunter hunter;
-    float timer;
+    private float timer;
 
-    public IdleState(Hunter h) => hunter = h;
+    public IdleState(Hunter hunter) : base(hunter) { }
 
-    public void Enter()
+    public override void Enter()
     {
-        timer = 0;
+        timer = hunter.RestDuration;
     }
 
-    public void Update()
+    public override void Update()
     {
-        timer += Time.deltaTime;
-        hunter.energy += hunter.energyRecovery * Time.deltaTime;
+        timer -= UnityEngine.Time.deltaTime;
 
-        if (timer > 3f)
+        if (timer <= 0f)
         {
-            hunter.ChangeState(hunter.patrolState);
+            hunter.RestoreEnergy();
+            hunter.ChangeState(new PatrolState(hunter));
         }
     }
 
-    public void Exit() { }
+    public override void Exit()
+    {
+    }
 }
