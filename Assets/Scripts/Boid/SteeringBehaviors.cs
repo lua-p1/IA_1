@@ -3,7 +3,7 @@ public class SteeringBehaviors : MonoBehaviour
 {
     [Header("Movement")]
     [SerializeField] private float maxSpeed = 5f;
-    [SerializeField] private float maxForce = 10f;
+    [SerializeField] private float maxForce = 0.01f;
     [SerializeField] private float arriveRadius = 3f;
 
     public Vector3 Velocity { get; private set; }
@@ -63,5 +63,9 @@ public class SteeringBehaviors : MonoBehaviour
     public float GetMaxSpeed()
     {
         return maxSpeed;
+    }
+    public float GetMaxForce()
+    {
+        return maxForce;
     }
 }

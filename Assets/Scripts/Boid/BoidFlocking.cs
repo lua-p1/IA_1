@@ -12,7 +12,7 @@ public class BoidFlocking : MonoBehaviour
     [Header("Weights")]
     [SerializeField] private float separationWeight = 2f;
     [SerializeField] private float alignmentWeight = 1f;
-    [SerializeField] private float cohesionWeight = 1f;
+    [SerializeField] private float cohesionWeight = 0.5f;
 
     [Header("Layer Mask")]
     [SerializeField] private LayerMask boidLayer;
@@ -56,63 +56,59 @@ public class BoidFlocking : MonoBehaviour
     private Vector3 Separation()
     {
         List<Boid> neighbors = GetNearbyBoids(separationRadius);
-
+        var desired = Vector3.zero;
         if (neighbors.Count == 0)
             return Vector3.zero;
-
         Vector3 force = Vector3.zero;
-
         foreach (Boid boid in neighbors)
         {
-            Vector3 diff = transform.position - boid.transform.position;
-
-            if (diff != Vector3.zero)
-                force += diff.normalized / diff.magnitude;
+            Vector3 diretions = transform.position - boid.transform.position;
+            desired += diretions;
         }
-
-        return force.normalized;
+        if (desired == Vector3.zero)
+            return Vector3.zero;
+        desired.Normalize();
+        desired *= steering.GetMaxSpeed();
+        var steer = desired - steering.Velocity;
+        steer = Vector3.ClampMagnitude(steer, steering.GetMaxForce());
+        return steer;
     }
 
     private Vector3 Alignment()
     {
         List<Boid> neighbors = GetNearbyBoids(alignmentRadius);
-
         if (neighbors.Count == 0)
             return Vector3.zero;
-
-        Vector3 averageVelocity = Vector3.zero;
-
+        var desired = Vector3.zero;
         foreach (Boid boid in neighbors)
         {
             SteeringBehaviors otherSteering = boid.GetComponent<SteeringBehaviors>();
-
-            if (otherSteering != null)
-                averageVelocity += otherSteering.Velocity;
+            desired += otherSteering.Velocity;
         }
-
-        averageVelocity /= neighbors.Count;
-
-        if (averageVelocity == Vector3.zero)
+        if (desired == Vector3.zero)
             return Vector3.zero;
-
-        return averageVelocity.normalized;
+        desired.Normalize();
+        desired *= steering.GetMaxSpeed();
+        var steer = desired - steering.Velocity;
+        steer = Vector3.ClampMagnitude(steer, steering.GetMaxForce());
+        return steer;
     }
 
     private Vector3 Cohesion()
     {
         List<Boid> neighbors = GetNearbyBoids(cohesionRadius);
-
         if (neighbors.Count == 0)
             return Vector3.zero;
-
         Vector3 center = Vector3.zero;
-
         foreach (Boid boid in neighbors)
             center += boid.transform.position;
-
         center /= neighbors.Count;
-
-        return steering.Seek(center);
+        var dir = center - this.transform.position;
+        var desired = dir.normalized;
+        desired *= steering.GetMaxSpeed();
+        var steer = desired - steering.Velocity;
+        steer = Vector3.ClampMagnitude(steer, steering.GetMaxForce());
+        return steer;
     }
 
     public bool HasNearbyBoids()

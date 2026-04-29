@@ -1,5 +1,6 @@
+using NUnit.Framework;
+using System.Collections.Generic;
 using UnityEngine;
-
 [RequireComponent(typeof(SteeringBehaviors))]
 [RequireComponent(typeof(BoidFlocking))]
 public class Boid : MonoBehaviour
@@ -7,6 +8,9 @@ public class Boid : MonoBehaviour
     [Header("Detection Ranges")]
     [SerializeField] private float foodDetectionRange = 8f;
     [SerializeField] private float hunterDetectionRange = 10f;
+
+    [Header("Food")]
+    [SerializeField] private float consumeDistance = 1.5f;
 
     [Header("Wander")]
     [SerializeField] private float wanderRadius = 2f;
@@ -17,126 +21,92 @@ public class Boid : MonoBehaviour
     [SerializeField] private LayerMask hunterLayer;
 
     [Header("Debug Colors")]
-    [SerializeField] private Color foodRangeColor = Color.yellow;
-    [SerializeField] private Color hunterRangeColor = Color.magenta;
+    private Color foodRangeColor = Color.yellow;
+    private Color hunterRangeColor = Color.magenta;
+    private Color consumeRangeColor = Color.cyan;
 
     private SteeringBehaviors steering;
     private BoidFlocking flocking;
-
     private void Awake()
     {
         steering = GetComponent<SteeringBehaviors>();
         flocking = GetComponent<BoidFlocking>();
     }
-
     private void Update()
     {
         MakeDecision();
     }
-
     private void MakeDecision()
     {
         Food nearestFood = FindNearestFood();
-
-        // PRIORIDAD 1: Buscar comida
         if (nearestFood != null)
         {
             Vector3 steeringForce = steering.Arrive(nearestFood.transform.position);
             steering.Move(steeringForce);
-
-            if (Vector3.Distance(transform.position, nearestFood.transform.position) < 1f)
+            float distanceToFood = Vector3.Distance(transform.position,nearestFood.transform.position);
+            if (distanceToFood <= consumeDistance)
             {
                 nearestFood.Consume();
             }
-
             return;
         }
-
-        // PRIORIDAD 2: Huir del hunter
         Hunter hunter = FindHunter();
-
         if (hunter != null)
         {
-            Vector3 steeringForce = steering.Evade(
-                hunter.transform,
-                hunter.GetVelocity()
-            );
-
+            Vector3 steeringForce = steering.Evade(hunter.transform,hunter.GetVelocity());
             steering.Move(steeringForce);
             return;
         }
-
-        // PRIORIDAD 3: Flocking
         if (flocking.HasNearbyBoids())
         {
+            Debug.Log("Entro");
             Vector3 steeringForce = flocking.CalculateFlocking();
             steering.Move(steeringForce);
             return;
         }
-
-        // PRIORIDAD 4: Wander
-        Vector3 wanderForce = steering.Wander(wanderRadius, wanderDistance);
+        Vector3 wanderForce = steering.Wander(wanderRadius,wanderDistance);
         steering.Move(wanderForce);
     }
-
     private Food FindNearestFood()
     {
-        Collider[] foods = Physics.OverlapSphere(
-            transform.position,
-            foodDetectionRange,
-            foodLayer
-        );
-
+        Collider[] foods = Physics.OverlapSphere(transform.position,foodDetectionRange,foodLayer);
         Food nearest = null;
         float minDistance = Mathf.Infinity;
-
         foreach (Collider foodCollider in foods)
         {
             Food food = foodCollider.GetComponent<Food>();
-
             if (food == null || !food.gameObject.activeInHierarchy)
                 continue;
-
-            float dist = Vector3.Distance(
-                transform.position,
-                food.transform.position
-            );
-
-            if (dist < minDistance)
+            float distance = Vector3.Distance(transform.position,food.transform.position);
+            if (distance < minDistance)
             {
-                minDistance = dist;
+                minDistance = distance;
                 nearest = food;
             }
         }
-
         return nearest;
     }
-
     private Hunter FindHunter()
     {
         Collider[] hunters = Physics.OverlapSphere(
             transform.position,
             hunterDetectionRange,
-            hunterLayer
-        );
-
+            hunterLayer);
         if (hunters.Length == 0)
             return null;
-
         return hunters[0].GetComponent<Hunter>();
     }
-
     public Vector3 GetVelocity()
     {
         return steering.Velocity;
     }
-
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = foodRangeColor;
-        Gizmos.DrawWireSphere(transform.position, foodDetectionRange);
-
+        Gizmos.DrawWireSphere(transform.position,foodDetectionRange);
         Gizmos.color = hunterRangeColor;
         Gizmos.DrawWireSphere(transform.position, hunterDetectionRange);
+        Gizmos.color = consumeRangeColor;
+        Gizmos.DrawWireSphere(transform.position,consumeDistance);
     }
 }

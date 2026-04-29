@@ -142,6 +142,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   foodDetectionRange: 6
   hunterDetectionRange: 8
+  consumeDistance: 1.5
   wanderRadius: 2
   wanderDistance: 3
   foodLayer:
@@ -152,6 +153,7 @@ MonoBehaviour:
     m_Bits: 64
   foodRangeColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   hunterRangeColor: {r: 1, g: 0, b: 1, a: 1}
+  consumeRangeColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!114 &3918003140488354110
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -164,12 +166,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efb2506ea26bed14caacb90aed7185e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  separationRadius: 1.5
-  alignmentRadius: 2.5
-  cohesionRadius: 3.5
-  separationWeight: 2
-  alignmentWeight: 1
-  cohesionWeight: 1
+  separationRadius: 4
+  alignmentRadius: 4
+  cohesionRadius: 4
+  separationWeight: 4
+  alignmentWeight: 2
+  cohesionWeight: 2
   boidLayer:
     serializedVersion: 2
     m_Bits: 128
