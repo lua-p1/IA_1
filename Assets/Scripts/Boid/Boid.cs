@@ -88,10 +88,7 @@ public class Boid : MonoBehaviour
     }
     private Hunter FindHunter()
     {
-        Collider[] hunters = Physics.OverlapSphere(
-            transform.position,
-            hunterDetectionRange,
-            hunterLayer);
+        Collider[] hunters = Physics.OverlapSphere(transform.position,hunterDetectionRange,hunterLayer);
         if (hunters.Length == 0)
             return null;
         return hunters[0].GetComponent<Hunter>();
@@ -102,8 +99,8 @@ public class Boid : MonoBehaviour
     }
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = foodRangeColor;
         Gizmos.DrawWireSphere(transform.position,foodDetectionRange);
+        Gizmos.color = foodRangeColor;
         Gizmos.color = hunterRangeColor;
         Gizmos.DrawWireSphere(transform.position, hunterDetectionRange);
         Gizmos.color = consumeRangeColor;

@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-
 [RequireComponent(typeof(SteeringBehaviors))]
 public class BoidFlocking : MonoBehaviour
 {
@@ -18,41 +17,31 @@ public class BoidFlocking : MonoBehaviour
     [SerializeField] private LayerMask boidLayer;
 
     private SteeringBehaviors steering;
-
     private void Awake()
     {
         steering = GetComponent<SteeringBehaviors>();
     }
-
     public Vector3 CalculateFlocking()
     {
         Vector3 separation = Separation() * separationWeight;
         Vector3 alignment = Alignment() * alignmentWeight;
         Vector3 cohesion = Cohesion() * cohesionWeight;
-
         return separation + alignment + cohesion;
     }
-
     private List<Boid> GetNearbyBoids(float radius)
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, radius, boidLayer);
-
         List<Boid> nearby = new List<Boid>();
-
         foreach (Collider hit in hits)
         {
             if (hit.gameObject == gameObject)
                 continue;
-
             Boid boid = hit.GetComponent<Boid>();
-
             if (boid != null)
                 nearby.Add(boid);
         }
-
         return nearby;
     }
-
     private Vector3 Separation()
     {
         List<Boid> neighbors = GetNearbyBoids(separationRadius);
@@ -73,7 +62,6 @@ public class BoidFlocking : MonoBehaviour
         steer = Vector3.ClampMagnitude(steer, steering.GetMaxForce());
         return steer;
     }
-
     private Vector3 Alignment()
     {
         List<Boid> neighbors = GetNearbyBoids(alignmentRadius);
@@ -93,7 +81,6 @@ public class BoidFlocking : MonoBehaviour
         steer = Vector3.ClampMagnitude(steer, steering.GetMaxForce());
         return steer;
     }
-
     private Vector3 Cohesion()
     {
         List<Boid> neighbors = GetNearbyBoids(cohesionRadius);
@@ -110,20 +97,16 @@ public class BoidFlocking : MonoBehaviour
         steer = Vector3.ClampMagnitude(steer, steering.GetMaxForce());
         return steer;
     }
-
     public bool HasNearbyBoids()
     {
         return GetNearbyBoids(cohesionRadius).Count > 0;
     }
-
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, separationRadius);
-
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(transform.position, alignmentRadius);
-
         Gizmos.color = Color.green;
         Gizmos.DrawWireSphere(transform.position, cohesionRadius);
     }

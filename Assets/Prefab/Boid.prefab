@@ -126,7 +126,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxSpeed: 5
-  maxForce: 10
+  maxForce: 18
   arriveRadius: 3
 --- !u!114 &1743601189566248112
 MonoBehaviour:
@@ -151,9 +151,6 @@ MonoBehaviour:
   hunterLayer:
     serializedVersion: 2
     m_Bits: 64
-  foodRangeColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
-  hunterRangeColor: {r: 1, g: 0, b: 1, a: 1}
-  consumeRangeColor: {r: 0, g: 1, b: 1, a: 1}
 --- !u!114 &3918003140488354110
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -166,12 +163,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efb2506ea26bed14caacb90aed7185e6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  separationRadius: 4
-  alignmentRadius: 4
-  cohesionRadius: 4
+  separationRadius: 1
+  alignmentRadius: 3
+  cohesionRadius: 6
   separationWeight: 4
-  alignmentWeight: 2
-  cohesionWeight: 2
+  alignmentWeight: 1.2
+  cohesionWeight: 0.8
   boidLayer:
     serializedVersion: 2
     m_Bits: 128

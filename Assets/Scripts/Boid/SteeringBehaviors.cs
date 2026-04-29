@@ -13,16 +13,13 @@ public class SteeringBehaviors : MonoBehaviour
         steering = Vector3.ClampMagnitude(steering, maxForce);
         Velocity = Vector3.ClampMagnitude(Velocity + steering * Time.deltaTime,maxSpeed);
         Vector3 newPosition = transform.position + Velocity * Time.deltaTime;
-        newPosition.y = 1f;
+        newPosition.y = -0.5f;
         transform.position = newPosition;
         Vector3 flatVelocity = new Vector3(Velocity.x,0f,Velocity.z);
         if (flatVelocity.sqrMagnitude > 0.01f)
         {
             Quaternion targetRotation = Quaternion.LookRotation(flatVelocity);
-            transform.rotation = Quaternion.Slerp(
-                transform.rotation,
-                targetRotation,
-                Time.deltaTime * 8f);
+            transform.rotation = Quaternion.Slerp(transform.rotation,targetRotation,Time.deltaTime * 8f);
         }
     }
     public Vector3 Seek(Vector3 target)
