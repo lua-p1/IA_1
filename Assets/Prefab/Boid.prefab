@@ -125,7 +125,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e2ca27ea8b48f0043a33ececcfe76ea6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxSpeed: 5
+  maxSpeed: 3
   maxForce: 18
   arriveRadius: 3
 --- !u!114 &1743601189566248112
@@ -140,7 +140,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 401af033b3d143848853816cb00fdeb4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foodDetectionRange: 6
+  foodDetectionRange: 7
   hunterDetectionRange: 8
   consumeDistance: 1.5
   wanderRadius: 2

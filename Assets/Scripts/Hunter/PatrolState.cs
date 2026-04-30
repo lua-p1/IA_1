@@ -9,15 +9,12 @@ public class PatrolState : HunterState
     public override void Update()
     {
         hunter.Patrol();
-
         hunter.ConsumeEnergy(hunter.PatrolCost);
-
         if (!hunter.HasEnergy())
         {
             hunter.ChangeState(new IdleState(hunter));
             return;
         }
-
         if (hunter.CanSeeBoid())
         {
             hunter.ChangeState(new HuntingState(hunter));

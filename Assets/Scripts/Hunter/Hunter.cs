@@ -4,8 +4,8 @@ public class Hunter : MonoBehaviour
 {
     [Header("Energy")]
     [SerializeField] private float maxEnergy = 100f;
-    [SerializeField] private float patrolEnergyCostPerSecond = 5f;
-    [SerializeField] private float huntingEnergyCostPerSecond = 10f;
+    [SerializeField] private float patrolEnergyCostPerSecond = 1f;
+    [SerializeField] private float huntingEnergyCostPerSecond = 3f;
     [SerializeField] private float restDuration = 3f;
 
     [Header("Detection")]
@@ -50,6 +50,7 @@ public class Hunter : MonoBehaviour
     private void Update()
     {
         currentState?.Update();
+        Debug.Log(currentEnergy);
     }
     public void ChangeState(HunterState newState)
     {
@@ -77,11 +78,11 @@ public class Hunter : MonoBehaviour
         Transform target = waypoints[currentWaypointIndex];
         Vector3 steeringForce = steering.Arrive(target.position);
         steering.Move(steeringForce);
-
-        if (Vector3.Distance(transform.position, target.position) < 1f)
+        if (Vector3.Distance(transform.position, target.position) < steering.GetArriveRadius() * 0.5f)
         {
             AdvanceWaypoint();
         }
+        Debug.Log("Waypoint actual: " + currentWaypointIndex);
     }
     private void AdvanceWaypoint()
     {
@@ -174,19 +175,18 @@ public class Hunter : MonoBehaviour
     {
         Gizmos.color = visionColor;
         Gizmos.DrawWireSphere(transform.position, visionRange);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, shootRange);
         if (waypoints == null || waypoints.Length == 0)
             return;
         Gizmos.color = waypointColor;
         for (int i = 0; i < waypoints.Length; i++)
         {
-            if (waypoints[i] == null)
-                continue;
+            if (waypoints[i] == null) continue;
             Gizmos.DrawSphere(waypoints[i].position, 0.4f);
             if (i < waypoints.Length - 1 && waypoints[i + 1] != null)
             {
-                Gizmos.DrawLine(waypoints[i].position,waypoints[i + 1].position);
-                Gizmos.color = Color.yellow;
-                Gizmos.DrawWireSphere(transform.position, shootRange);
+                Gizmos.DrawLine(waypoints[i].position, waypoints[i + 1].position);
             }
         }
     }

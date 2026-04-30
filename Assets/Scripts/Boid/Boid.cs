@@ -1,5 +1,3 @@
-using NUnit.Framework;
-using System.Collections.Generic;
 using UnityEngine;
 [RequireComponent(typeof(SteeringBehaviors))]
 [RequireComponent(typeof(BoidFlocking))]
@@ -38,23 +36,23 @@ public class Boid : MonoBehaviour
     }
     private void MakeDecision()
     {
-        Food nearestFood = FindNearestFood();
-        if (nearestFood != null)
-        {
-            Vector3 steeringForce = steering.Arrive(nearestFood.transform.position);
-            steering.Move(steeringForce);
-            float distanceToFood = Vector3.Distance(transform.position,nearestFood.transform.position);
-            if (distanceToFood <= consumeDistance)
-            {
-                nearestFood.Consume();
-            }
-            return;
-        }
         Hunter hunter = FindHunter();
         if (hunter != null)
         {
             Vector3 steeringForce = steering.Evade(hunter.transform,hunter.GetVelocity());
             steering.Move(steeringForce);
+            return;
+        }
+        Food nearestFood = FindNearestFood();
+        if (nearestFood != null)
+        {
+            Vector3 steeringForce = steering.Arrive(nearestFood.transform.position);
+            steering.Move(steeringForce);
+            float distanceToFood = Vector3.Distance(transform.position, nearestFood.transform.position);
+            if (distanceToFood <= consumeDistance)
+            {
+                nearestFood.Consume();
+            }
             return;
         }
         if (flocking.HasNearbyBoids())

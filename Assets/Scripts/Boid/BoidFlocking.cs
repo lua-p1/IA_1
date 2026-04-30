@@ -26,7 +26,12 @@ public class BoidFlocking : MonoBehaviour
         Vector3 separation = Separation() * separationWeight;
         Vector3 alignment = Alignment() * alignmentWeight;
         Vector3 cohesion = Cohesion() * cohesionWeight;
-        return separation + alignment + cohesion;
+        Vector3 flockForce = separation + alignment + cohesion;
+        if (flockForce.sqrMagnitude < 0.01f)
+        {
+            flockForce = steering.Wander(1.5f, 2f);
+        }
+        return flockForce;
     }
     private List<Boid> GetNearbyBoids(float radius)
     {
@@ -51,11 +56,11 @@ public class BoidFlocking : MonoBehaviour
         Vector3 force = Vector3.zero;
         foreach (Boid boid in neighbors)
         {
-            Vector3 diretions = transform.position - boid.transform.position;
-            desired += diretions;
+            Vector3 directions = transform.position - boid.transform.position;
+            float distance = directions.magnitude;
+            if (distance > 0f)
+                desired += directions.normalized / distance;
         }
-        if (desired == Vector3.zero)
-            return Vector3.zero;
         desired.Normalize();
         desired *= steering.GetMaxSpeed();
         var steer = desired - steering.Velocity;
