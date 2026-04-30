@@ -34,15 +34,12 @@ public class Boid : MonoBehaviour
     {
         MakeDecision();
     }
+    private void LateUpdate()
+    {
+        WrapAround();
+    }
     private void MakeDecision()
     {
-        Hunter hunter = FindHunter();
-        if (hunter != null)
-        {
-            Vector3 steeringForce = steering.Evade(hunter.transform,hunter.GetVelocity());
-            steering.Move(steeringForce);
-            return;
-        }
         Food nearestFood = FindNearestFood();
         if (nearestFood != null)
         {
@@ -55,6 +52,13 @@ public class Boid : MonoBehaviour
             }
             return;
         }
+        Hunter hunter = FindHunter();
+        if (hunter != null)
+        {
+            Vector3 steeringForce = steering.Evade(hunter.transform, hunter.GetVelocity());
+            steering.Move(steeringForce);
+            return;
+        }
         if (flocking.HasNearbyBoids())
         {
             Debug.Log("Entro");
@@ -64,6 +68,21 @@ public class Boid : MonoBehaviour
         }
         Vector3 wanderForce = steering.Wander(wanderRadius,wanderDistance);
         steering.Move(wanderForce);
+    }
+    private void WrapAround()
+    {
+        Vector3 pos = transform.position;
+        float mapWidth = 50f;
+        float mapHeight = 50f;
+        if (pos.x > mapWidth)
+            pos.x = -mapWidth;
+        else if (pos.x < -mapWidth)
+            pos.x = mapWidth;
+        if (pos.z > mapHeight)
+            pos.z = -mapHeight;
+        else if (pos.z < -mapHeight)
+            pos.z = mapHeight;
+        transform.position = pos;
     }
     private Food FindNearestFood()
     {
